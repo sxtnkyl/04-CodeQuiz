@@ -13,7 +13,7 @@ const questions = [
   },
   {
     question: "Commonly used data types DO NOT include:",
-    options: ["strings", "booleans", " alerts", "numbers"],
+    options: ["strings", "booleans", "alerts", "numbers"],
     answer: "alerts",
   },
   {
