@@ -4,18 +4,30 @@ let actionBlock = $("#action-block");
 let timeLeft = 60;
 //index of current question
 let question;
-let score;
+//correct answer = +1
+let score = 0;
 
 //DOM flow
 ////make form, append data, submit/next btn flow, remove form
 $(document).ready(function () {
   loadStartPage();
+
+  //onclick start button- start countdown
+  $(".start-btn").on("click", (e) => {
+    console.log("start btn clicked");
+    e.preventDefault();
+    question = 0;
+    removeSlide();
+    countdown();
+    makeSlide(question);
+  });
 });
 
 //make start page
 function loadStartPage() {
   //make start page
-  let start = $(actionBlock).append("form");
+  $(actionBlock).append("<form></form>");
+  let start = $("form");
   start.addClass("start-slide");
   //make title
   $(start).append("<h1>Coding Quiz Challenge</h1>");
@@ -24,35 +36,58 @@ function loadStartPage() {
     "<p>Try to answer the following code related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!</p>"
   );
   //make start button
-  $(start).append("<button>Start Quiz</button>").addClass("start-btn");
+  $(start).append("<button>Start Quiz</button>");
+  $("button").addClass("start-btn");
 }
 
 function makeSlide(ref) {
+  console.log(ref);
   let curr = questions[ref];
-  let slide = $(actionBlock).append("form");
+  $(actionBlock).append("<form></form>");
+  let slide = $("form");
   //makes el with id ref
   slide.addClass(ref);
-  //question
-  $(slide).append("<div>" + curr + "<div>");
-  let list = $(slide).append("ul");
-  //options
-  for (let i = 0; i < curr.options[i]; i++) {
-    $(list).append("li").text(curr[i]);
+  //make question
+  $(slide).append("<h1>" + curr.question + "<h1>");
+  //make options
+  for (let i = 0; i < curr.options.length; i++) {
+    $(slide).append(
+      $(
+        "<input type='radio' name='question' value='" +
+          curr.options[i] +
+          "'>" +
+          "<label>" +
+          curr.options[i] +
+          "</label>" +
+          "</input>"
+      )
+    );
   }
-  $(slide).append("button").text("submit").addClass("submit-btn");
+  //make submit button
+  $(slide).append("<button></button>");
+  $("button").text("submit").addClass("submit-btn");
+
+  //onclick submit button
+  $(".submit-btn").on("click", (e) => {
+    e.preventDefault();
+    handleSubmit();
+  });
   //TODO: add transition animation
 }
 
 function removeSlide() {
+  console.log("im removing a slide");
   //removes form el
-  $(actionBlock).remove("form");
+  $("form").remove();
   //TODO: add transition animation
 }
 
 function showAnswer() {
-  let answer = $(actionBlock)
-    .children()
-    .append("<div>" + answer + "</div>");
+  $("form").append(
+    "<div class='answer'> The correct answer is: " +
+      questions[question].answer +
+      "</div>"
+  );
 }
 
 //track time
@@ -69,36 +104,48 @@ function countdown() {
 }
 
 function validateAnswer() {
+  let getSelectedValue = document.querySelector(
+    'input[name="question"]:checked'
+  );
+  console.log(
+    "value selected: ",
+    getSelectedValue.value,
+    questions[question].answer
+  );
+
+  if (getSelectedValue == null) {
+    $("form").append(
+      "<div class='error'>*You have not selected any season</div>"
+    );
+  }
   //correct && score++
-  //!correct && 
+  if (getSelectedValue.value == questions[question].answer) {
+    score++;
+  }
+  //!correct && timeLeft -+ 10
+  if (getSelectedValue.value !== questions[question].answer) {
+    timeLeft - +10;
+  }
 }
 
 //handle the submit button click
 function handleSubmit() {
   //check answer
-  function validateAnswer();
+  validateAnswer();
+  showAnswer();
   //remove submit btn
-  $(".submit-btn").remove();
+  let submitBtn = $(".submit-btn");
+  submitBtn.remove();
   //add next button
-  $("form").append("button").text("next").addClass("next-btn");
-}
+  $("form").append("<button class='next-btn'>Next</button>");
 
-//onclick start button- start countdown
-$(".start-btn").click((e) => {
-  e.preventDefault();
-  question = 0;
-  removeSlide();
-  makeSlide(question);
-});
-//onclick submit button
-$(".submit-btn").click(function (e) {
-  e.preventDefault();
-  handleSubmit();
-});
-//onclick next button
-$(".next-btn").click(function (e) {
-  e.preventDefault();
-  removeSlide();
-  question++;
-  makeSlide(question);
-});
+  // //onclick next button
+  // $(".next-btn").click(function (e) {
+  //   console.log("clicked next btn");
+  //   e.preventDefault();
+  //   removeSlide();
+  //   $(".answer").remove();
+  //   question++;
+  //   makeSlide(question);
+  // });
+}
