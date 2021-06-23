@@ -15,6 +15,7 @@ $(document).ready(function () {
 
 //make start page
 function loadStartPage() {
+  timerEl.text(timeLeft);
   //make start page
   $(actionBlock).append("<form></form>");
   let start = $("form");
@@ -51,7 +52,7 @@ function makeSlide(ref) {
   for (let i = 0; i < curr.options.length; i++) {
     $(slide).append(
       $(
-        "<button name='question' value='" +
+        "<button class='option' name='question' value='" +
           curr.options[i] +
           "'>" +
           curr.options[i] +
@@ -125,18 +126,42 @@ function loadSaveScorePage() {
   //make restart button
   $(start).append("<button class='restart'>Restart Quiz</button>");
   $(start).append(
-    "<input type='text' placeholder='Submit Your Initials Here'></input>"
+    "<input class='initials' type='text' placeholder='Submit Your Initials Here'></input>"
   );
 
   //handle initials submission (with Enter Key)
+  //make sure not empty
+  $(".initials").keypress((e) => {
+    if (e.key === "Enter" && e.target.value !== "") {
+      saveScore(e);
+    }
+  });
 
   //onclick initials button
   $(".restart").on("click", (e) => {
     e.preventDefault();
+    question = 0;
     timeLeft = 60;
+    timerEl.text(timeLeft);
     removeSlide();
     loadStartPage();
   });
 }
 
-function saveScore() {}
+function saveScore(e) {
+  let initial = e.target.value;
+  let scoreObj = {
+    initials: initial,
+    score: timeLeft,
+  };
+
+  //local storage scores is array of objects
+  //get from local storage, if any
+  let allScores = JSON.parse(window.localStorage.getItem("allScores")) || [];
+
+  allScores.push(scoreObj);
+  window.localStorage.setItem("allScores", JSON.stringify(allScores));
+
+  //go to highScores page
+  window.location.href = "highScores.html";
+}
