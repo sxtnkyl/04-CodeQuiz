@@ -79,13 +79,13 @@ function removeSlide() {
 //track time
 function countdown() {
   interval = setInterval(function () {
-    //if game ended
     if (timeLeft > 0) {
       timeLeft--;
       timerEl.text(timeLeft);
     } else {
       timerEl.textContent = "";
-      clearInterval(interval);
+      removeSlide();
+      loadSaveScorePage();
     }
   }, 1000);
 }
